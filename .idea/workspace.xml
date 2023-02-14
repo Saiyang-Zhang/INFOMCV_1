@@ -1,21 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="c992ddfe-e5f2-454c-8992-6d6a3d539d24" name="Changes" comment="Merge remote-tracking branch 'origin/main'&#10;&#10;# Conflicts:&#10;#&#9;UndistortImage/0.jpg">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CameraRoll/WIN_20230212_02_32_20_Pro.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/CameraRoll/WIN_20230212_02_34_22_Pro.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/CameraRoll/WIN_20230212_02_40_07_Pro.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/CameraRoll/WIN_20230212_02_40_40_Pro.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/CameraRoll/WIN_20230212_02_40_49_Pro.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/CameraRoll/WIN_20230212_02_40_54_Pro.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/CameraRoll/WIN_20230212_02_42_07_Pro.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/CameraRoll/WIN_20230212_02_45_11_Pro.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/CameraRoll/WIN_20230212_02_46_38_Pro.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/CameraRoll/WIN_20230212_02_50_11_Pro.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/CameraRoll/photo-1500530855697-b586d89ba3ee.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/p1.py" beforeDir="false" afterPath="$PROJECT_DIR$/p1.py" afterDir="false" />
-    </list>
+    <list default="true" id="c992ddfe-e5f2-454c-8992-6d6a3d539d24" name="Changes" comment="Merge remote-tracking branch 'origin/main'&#10;&#10;# Conflicts:&#10;#&#9;UndistortImage/0.jpg" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -69,7 +55,21 @@
       <option name="project" value="LOCAL" />
       <updated>1676252458180</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Merge remote-tracking branch 'origin/main'&#10;&#10;# Conflicts:&#10;#&#9;UndistortImage/0.jpg">
+      <created>1676412605447</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1676412605447</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Merge remote-tracking branch 'origin/main'&#10;&#10;# Conflicts:&#10;#&#9;UndistortImage/0.jpg">
+      <created>1676412623926</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1676412623926</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
