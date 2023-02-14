@@ -1,108 +1,251 @@
 import cv2
 import numpy as np
 import glob
+import math
+import win32api,win32con
+
+w = 9
+h = 6
+# termination criteria, maximum number of loops = 30 and maximum error tolerance = 0.001
+criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
+# checkerboard points in the world coordinate system, e.g. (0,0,0), (1,0,0), (2,0,0) ....,(6,5,0),
+# with the z-coordinate removed, recorded as a two-dimensional matrix
+objp = np.zeros((w * h, 3), np.float32)
+objp[:, :2] = np.mgrid[0:w, 0:h].T.reshape(-1, 2)
+objp = objp * 23    #grid length = 23mm
+
+# Store the world coordinates and image coordinates of the checkerboard grid
+objpoints = []  # 3d point in real world space
+imgpoints = []  # 2d points in image plane.
+
+coordinates = []
+subCoord = []
+i = 0
 
 # function to display the coordinates of the points clicked on the image
 def click_event(event, x, y, flags, params):
+    global coordinates, subCoord, i
+
     # checking for left mouse clicks
     if event == cv2.EVENT_LBUTTONDOWN:
-        # displaying the coordinates on the Shell
-        print(x, ' ', y)
         # displaying the coordinates on the image window
         font = cv2.FONT_HERSHEY_SIMPLEX
-        cv2.putText(params, str(x)+','+str(y), (x, y), font, 1, (255, 0, 0), 2)
-        cv2.imshow('findCorners', params)
+        # displaying the coordinates on the Shell
+        if i < 4:
+            cv2.putText(params, str(x) + ',' + str(y), (x, y), font, 1, (255, 0, 0), 2)
+            cv2.imshow('findCorners', params)
+            coordinates.append([x, y])
+        i += 1
+        if i == 4:
+            subcoordinates(params)
+            #subcoordinates_alter(params)
+            addCorners()
 
     # checking for right mouse clicks
     if event == cv2.EVENT_RBUTTONDOWN:
-        # displaying the coordinates on the Shell
-        print(x, ' ', y)
         # displaying the coordinates on the image window
         font = cv2.FONT_HERSHEY_SIMPLEX
-        b = params[y, x, 0]
-        g = params[y, x, 1]
-        r = params[y, x, 2]
-        cv2.putText(params, str(b) + ',' + str(g) + ',' + str(r), (x, y), font, 1, (255, 255, 0), 2)
-        cv2.imshow('findCorners', params)
+        # displaying the coordinates on the Shell
+        if i < 4:
+            b = params[y, x, 0]
+            g = params[y, x, 1]
+            r = params[y, x, 2]
+            cv2.putText(params, str(b) + ',' + str(g) + ',' + str(r), (x, y), font, 1, (255, 255, 0), 2)
+            cv2.imshow('findCorners', params)
+            cv2.circle(params, (x, y), 5, (0, 255, 0), -1)
+            coordinates.append([x, y])
+        i += 1
+        if i == 4:
+            # subcoordinates(params)
+            subcoordinates_alter(params)
+            addCorners()
 
-def draw(img, corners, imgpts):
-    imgpts = np.int32(imgpts).reshape(-1,2)
-    # draw ground floor in green
-    img = cv2.drawContours(img, [imgpts[:4]],-1,(0,255,0),-2)
-    # draw pillars in blue color
-    for i,j in zip(range(4),range(4,8)):
-        img = cv2.line(img, tuple(imgpts[i]), tuple(imgpts[j]),(255),2)
-    # draw top layer in red color
-    img = cv2.drawContours(img, [imgpts[4:]],-1,(0,0,255),2)
-    return img
+def addCorners():
+    global coordinates, subCoord, i
+    #win32api.MessageBox(0, "Please close the window", "Warning", win32con.MB_OK)
 
-# offline phrase
-def offline():
-    # termination criteria, maximum number of loops = 30 and maximum error tolerance = 0.001
-    criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
-    w = 9
-    h = 6
+    # make it the same format as pattern detection results
+    corners2 = []
+    for Coor in subCoord:
+        corners2.append([Coor])
 
-    # checkerboard points in the world coordinate system, e.g. (0,0,0), (1,0,0), (2,0,0) ....,(6,5,0),
-    # with the z-coordinate removed, recorded as a two-dimensional matrix
-    objp = np.zeros((w*h,3), np.float32)
-    objp[:,:2] = np.mgrid[0:w,0:h].T.reshape(-1,2)
-    #objp = objp * 23    #grid length = 23mm
+    objpoints.append(objp)
+    imgpoints.append(np.array(corners2, np.float32))
+    #clear the numbers
+    coordinates = []
+    subCoord = []
+    i = 0
 
-    # Store the world coordinates and image coordinates of the checkerboard grid
-    objpoints = [] # 3d point in real world space
-    imgpoints = [] # 2d points in image plane.
+# find the coordinates of each square
+def subcoordinates(img):
+    SortCoord = sorted(coordinates, key=(lambda x: x[0]))
+    # square root ((x2-x1)^2 - (y2-y1)^2)
+    len1 = math.sqrt(((SortCoord[1][0] - SortCoord[0][0]) ** 2) + ((SortCoord[1][1] - SortCoord[0][1]) ** 2))
+    len2 = math.sqrt(((SortCoord[2][0] - SortCoord[0][0]) ** 2) + ((SortCoord[2][1] - SortCoord[0][1]) ** 2))
+    # print(len1, len2)
+    if len1 > len2:
+        coordLongLeg1 = split(SortCoord[0], SortCoord[1], 8)
+        coordLongLeg2 = split(SortCoord[2], SortCoord[3], 8)
+    else:
+        coordLongLeg1 = split(SortCoord[0], SortCoord[2], 8)
+        coordLongLeg2 = split(SortCoord[1], SortCoord[3], 8)
 
+    for m in range(9):
+        subSubCoord = split(coordLongLeg1[m], coordLongLeg2[m], 5)
+        for n in subSubCoord:
+            subCoord.append(n)
+
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    corners = np.array(subCoord, np.float32)
+    corners2 = cv2.cornerSubPix(gray, corners, (11, 11), (-1, -1), criteria)
+    cv2.drawChessboardCorners(img, (w, h), corners2, True)
+    cv2.imshow('findCorners', img)
+
+# split the line sigment and get the coordinates
+def split(start, end, segments):
+    x_delta = (end[0] - start[0]) / float(segments)
+    y_delta = (end[1] - start[1]) / float(segments)
+    points = []
+    for i in range(1, segments):
+        points.append([start[0] + i * x_delta, start[1] + i * y_delta])
+    return [start] + points + [end]
+
+def subcoordinates_alter(img):
+    SortCoord = sorted(coordinates, key=(lambda x: x[0]))
+    # square root ((x2-x1)^2 - (y2-y1)^2)
+    len1 = math.sqrt(((SortCoord[1][0] - SortCoord[0][0]) ** 2) + ((SortCoord[1][1] - SortCoord[0][1]) ** 2))
+    len2 = math.sqrt(((SortCoord[2][0] - SortCoord[0][0]) ** 2) + ((SortCoord[2][1] - SortCoord[0][1]) ** 2))
+    # print(len1, len2)
+    if len1 > len2:
+        l1 = []
+        interp_xl1 = np.linspace(SortCoord[0][0], SortCoord[1][0], w)
+        interp_yl1 = np.linspace(SortCoord[0][1], SortCoord[1][1], w)
+        for n in range(w):
+            l1.append([interp_xl1[n], interp_yl1[n]])
+        l2 = []
+        interp_xl2 = np.linspace(SortCoord[2][0], SortCoord[3][0], w)
+        interp_yl2 = np.linspace(SortCoord[2][1], SortCoord[3][1], w)
+        for n in range(w):
+            l2.append([interp_xl2[n], interp_yl2[n]])
+    else:
+        l1 = []
+        interp_xl1 = np.linspace(SortCoord[0][0], SortCoord[2][0], w)
+        interp_yl1 = np.linspace(SortCoord[0][1], SortCoord[2][1], w)
+        for n in range(w):
+            l1.append([interp_xl1[n], interp_yl1[n]])
+        l2 = []
+        interp_xl2 = np.linspace(SortCoord[1][0], SortCoord[3][0], w)
+        interp_yl2 = np.linspace(SortCoord[1][1], SortCoord[3][1], w)
+        for n in range(w):
+            l2.append([interp_xl2[n], interp_yl2[n]])
+
+    for n in range(w):
+        interp_xs = np.linspace(l1[n][0], l2[n][0], h)
+        interp_ys = np.linspace(l1[n][1], l2[n][1], h)
+        for m in range(h):
+            subCoord.append([interp_xs[m], interp_ys[m]])
+
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    corners = np.array(subCoord, np.float32)
+    corners2 = cv2.cornerSubPix(gray, corners, (11, 11), (-1, -1), criteria)
+    cv2.drawChessboardCorners(img, (w, h), corners2, True)
+    cv2.imshow('findCorners', img)
+
+
+
+# first run
+def firstRun():
     images = glob.glob('./CameraRoll/*.jpg')
 
     for fname in images:
         img = cv2.imread(fname)
-        #h1, w1 = img.shape[0], img.shape[1]
+        # h1, w1 = img.shape[0], img.shape[1]
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         # Find the chess board corners
         ret, corners = cv2.findChessboardCorners(gray, (w, h), None)
+
         # If found, save the information
         if ret == True:
-            #Finding sub-pixel corners based on the original corners
+            # Finding sub-pixel corners based on the original corners
             corners2 = cv2.cornerSubPix(gray, corners, (11, 11), (-1, -1), criteria)
             objpoints.append(objp)
             imgpoints.append(corners2)
-
-        else:
+            # Draw and display the corners
+            # cv2.drawChessboardCorners(img, (w, h), corners2, ret)
             # cv2.namedWindow('findCorners', cv2.WINDOW_NORMAL)
             # cv2.resizeWindow('findCorners', 640, 480)
             # cv2.imshow('findCorners', img)
-            # cv2.setMouseCallback('findCorners', click_event, img)
-            # corners2 = 线性插值？
-            # objpoints.append(objp)
-            # imgpoints.append(corners2)
-            # cv2.waitKey(0)
-        # cv2.destroyAllWindows()
-            print("a")
+            # cv2.waitKey(200)
+        else:
+            cv2.namedWindow('findCorners', cv2.WINDOW_NORMAL)
+            cv2.resizeWindow('findCorners', 640, 480)
+            cv2.imshow('findCorners', img)
+            cv2.setMouseCallback('findCorners', click_event, img)
+            cv2.waitKey(0)
+        cv2.destroyAllWindows()
 
-    print("imgpoints:", imgpoints)
+# second and third run
+def run(round):
+    images = glob.glob('./CameraRoll/*.jpg')
+    i = 0
+    for fname in images:
+        if i < round:
+            img = cv2.imread(fname)
+            gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+            u, v = img.shape[:2]
+            # Find the chess board corners
+            ret, corners = cv2.findChessboardCorners(gray, (w, h), None)
+            # If found, save the information
+            if ret == True:
+                # Finding sub-pixel corners based on the original corners
+                corners2 = cv2.cornerSubPix(gray, corners, (11, 11), (-1, -1), criteria)
+                objpoints.append(objp)
+                imgpoints.append(corners2)
+                # Draw and display the corners
+                # cv2.drawChessboardCorners(img, (w, h), corners2, ret)
+                # cv2.namedWindow('findCorners', cv2.WINDOW_NORMAL)
+                # cv2.resizeWindow('findCorners', 640, 480)
+                # cv2.imshow('findCorners', img)
+                # cv2.waitKey(2000)
+                i += 1
+        else:
+            break
+        cv2.destroyAllWindows()
+    return gray, u, v
+
+# offline phase
+def offline():
+    firstRun()  # run1
+    run(10)     # run2
+    gray, u, v = run(5)     # run3
     # Calibration
     ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, gray.shape[::-1], None, None)
+    # Save camera parameters to an NPY file
+    np.save('./CameraParams/mtx.npy', mtx)
+    np.save('./CameraParams/dist.npy', dist)
+    np.save('./CameraParams/rvecs.npy', rvecs)
+    np.save('./CameraParams/tvecs.npy', tvecs)
 
-    # print("ret:", ret)
-    # print("mtx:\n", mtx)    # 内参数矩阵
-    # print("dist:\n", dist)  # 畸变系数   distortion coefficients = (k_1,k_2,p_1,p_2,k_3)
-    # print("rvecs:\n", rvecs)    # 旋转向量,外参数
-    # print("tvecs:\n", tvecs )   # 平移向量,外参数
-    # newcameramtx, roi = cv2.getOptimalNewCameraMatrix(mtx, dist, (u,v), 0, (u,v))
-    # print("newcameramtx", newcameramtx) # 外参数
-    return mtx, dist, rvecs, tvecs
+# draw contours online
+def draw(img, corners, imgpts):
+    imgpts = np.int32(imgpts).reshape(-1, 2)
+    # draw ground floor in green
+    img = cv2.drawContours(img, [imgpts[:4]], -1, (0, 255, 0), -2)
+    # draw pillars in blue color
+    for i, j in zip(range(4), range(4, 8)):
+        img = cv2.line(img, tuple(imgpts[i]), tuple(imgpts[j]), (255), 2)
+    # draw top layer in red color
+    img = cv2.drawContours(img, [imgpts[4:]], -1, (0, 0, 255), 2)
+    return img
 
 # Online phase: Capture picture using webcam
 def online(mtx, dist):
     camera = cv2.VideoCapture(0)
-    n = 0
-    w = 9
-    h = 6
-    objp = np.zeros((w*h,3), np.float32)
-    objp[:,:2] = np.mgrid[0:w,0:h].T.reshape(-1,2)
+
+    objp = np.zeros((w * h, 3), np.float32)
+    objp[:, :2] = np.mgrid[0:w, 0:h].T.reshape(-1, 2)
     criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
-    axis = np.float32([[0,0,0], [0,2,0], [2,2,0], [2,0,0], [0,0,-2], [0,2,-2],[2,2,-2], [2,0,-2]])
+    axis = np.float32([[0, 0, 0], [0, 2, 0], [2, 2, 0], [2, 0, 0], [0, 0, -2], [0, 2, -2], [2, 2, -2], [2, 0, -2]])
 
     while True:
         ret, frame = camera.read()
@@ -112,7 +255,7 @@ def online(mtx, dist):
 
         if ret == True:
             corners2 = cv2.cornerSubPix(gray, corners, (11, 11), (-1, -1), criteria)
-             # Find the rotation and translation vectors.
+            # Find the rotation and translation vectors.
             ret, rvecs, tvecs = cv2.solvePnP(objp, corners2, mtx, dist)
             # project 3D points to image plane
             imgpts, jac = cv2.projectPoints(axis, rvecs, tvecs, mtx, dist)
@@ -120,35 +263,18 @@ def online(mtx, dist):
 
             # Draw and display the corners
             cv2.drawChessboardCorners(frame, (w, h), corners2, ret)
-            # cv2.namedWindow('findCorners', cv2.WINDOW_NORMAL)
-            # cv2.resizeWindow('findCorners', 640, 480)
-       
+
         cv2.imshow('Camera', frame)
-        cv2.waitKey(200)
-
-        # u, v = frame.shape[:2]
-        # newcameramtx, roi = cv2.getOptimalNewCameraMatrix(mtx, dist, (u,v), 0, (u,v))
-        # undistort
-        # dst1 = cv2.undistort(frame, mtx, dist, None, newcameramtx)
-        # remapping, same result as undistort
-        # mapx, mapy = cv2.initUndistortRectifyMap(mtx, dist, None, newcameramtx, (w1,h1), 5)
-        # dst2 = cv2.remap(frame, mapx, mapy, cv2.INTER_LINEAR)
-
-        # crop the image
-        # x, y, w1, h1 = roi
-        # dst1 = dst1[y:y+h1, x:x+w1]
-        # cv2.imshow("NewImage", dst1)
-        # k = cv2.waitKey(1)
-        # if k == 27:   #press Esc to quit
-        #     break
-        # elif k == ord('s'):   #press s to save the image
-        #     cv2.imwrite('./UndistortImage/' + str(n) + '.jpg', dst1)
-        #     n += 1
+        k = cv2.waitKey(1)
+        if k == 27 or cv2.getWindowProperty('Camera', cv2.WND_PROP_VISIBLE) < 1:   #press Esc to quit
+            break
 
     camera.release()
     cv2.destroyAllWindows()
 
-
 if __name__ == "__main__":
-    mtx, dist, rvecs, tvecs = offline()
+    #offline()
+    mtx = np.load('./CameraParams/mtx.npy')
+    dist = np.load('./CameraParams/dist.npy')
     online(mtx, dist)
+
