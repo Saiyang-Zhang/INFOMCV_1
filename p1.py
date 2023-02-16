@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 import glob
 import win32api,win32con
+import time
 
 w = 9
 h = 6
@@ -161,7 +162,7 @@ def offline():
     np.save('./CameraParams/tvecs.npy', tvecs)
 
 # draw contours online
-def draw(img, corners, imgpts):
+def draw(img, imgpts):
     imgpts = np.int32(imgpts).reshape(-1, 2)
     # draw ground floor in green
     img = cv2.drawContours(img, [imgpts[:4]], -1, (0, 255, 0), -2)
@@ -172,28 +173,42 @@ def draw(img, corners, imgpts):
     img = cv2.drawContours(img, [imgpts[4:]], -1, (0, 0, 255), 2)
     return img
 
+def shadow(img, shadowpts):
+
+    return
+
 # Online phase: Capture picture using webcam
-def online(mtx, dist):
+def online(mtx, dist, rvecs, tvecs):
     camera = cv2.VideoCapture(0)
 
     objp = np.zeros((w * h, 3), np.float32)
     objp[:, :2] = np.mgrid[0:w, 0:h].T.reshape(-1, 2)
     criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
-    axis = np.float32([[0, 0, 0], [0, 2, 0], [2, 2, 0], [2, 0, 0], [0, 0, -2], [0, 2, -2], [2, 2, -2], [2, 0, -2]])
+
+    light = np.float32([[9, 4, -6]])
+    #light = light.reshape((1, 1, 2))
 
     while True:
         ret, frame = camera.read()
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         # Find the chess board corners
-        ret, corners = cv2.findChessboardCorners(gray, (w, h), None)
+        ret, corners = cv2.findChessboardCorners(gray, (w, h), None,
+                                                 cv2.CALIB_CB_ADAPTIVE_THRESH+cv2.CALIB_CB_NORMALIZE_IMAGE+cv2.CALIB_CB_FAST_CHECK)
 
         if ret == True:
             corners2 = cv2.cornerSubPix(gray, corners, (11, 11), (-1, -1), criteria)
             # Find the rotation and translation vectors.
             ret, rvecs, tvecs = cv2.solvePnP(objp, corners2, mtx, dist)
+
+            t = (time.time()%12)/6
+            var1 = np.cos(t*np.pi)*np.sqrt(2)
+            var2 = np.sin(t*np.pi)*np.sqrt(2)
+            axis = np.float32([[1+var1, 1+var2, 0], [1-var2, 1+var1, 0], [1-var1, 1-var2, 0], [1+var2, 1-var1, 0], [1+var1, 1+var2, -2], [1-var2, 1+var1, -2], [1-var1, 1-var2, -2], [1+var2, 1-var1, -2]])
             # project 3D points to image plane
             imgpts, jac = cv2.projectPoints(axis, rvecs, tvecs, mtx, dist)
-            draw(frame, corners2, imgpts)
+            draw(frame, imgpts)
+
+            shadowpts = np
 
             # Draw and display the corners
             cv2.drawChessboardCorners(frame, (w, h), corners2, ret)
@@ -207,8 +222,10 @@ def online(mtx, dist):
     cv2.destroyAllWindows()
 
 if __name__ == "__main__":
-    offline()
+    #offline()
     mtx = np.load('./CameraParams/mtx.npy')
     dist = np.load('./CameraParams/dist.npy')
-    online(mtx, dist)
+    rvecs = np.load('./CameraParams/rvecs.npy')
+    tvecs = np.load('./CameraParams/tvecs.npy')
+    online(mtx, dist, rvecs, tvecs)
 
