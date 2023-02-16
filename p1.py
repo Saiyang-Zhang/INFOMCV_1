@@ -268,9 +268,9 @@ def online(mtx, dist, rvecs, tvecs):
             ret, rvecs, tvecs = cv2.solvePnP(objp, corners2, mtx, dist)
             
             t = (time.time()%12)/6
-            x_var = np.cos(t*np.pi)
-            z_var = np.sin(t*np.pi)
-            axis = np.float32([[x_var, 0, z_var], [x_var, 2, z_var], [-x_var, 2, z_var], [-x_var, 0, z_var], [x_var, 0, -z_var], [x_var, 2, -z_var], [-x_var, 2, -z_var], [-x_var, 0, -z_var]]) 
+            var1 = np.cos(t*np.pi)*np.sqrt(2)
+            var2 = np.sin(t*np.pi)*np.sqrt(2)
+            axis = np.float32([[1+var1, 1+var2, 0], [1-var2, 1+var1, 0], [1-var1, 1-var2, 0], [1+var2, 1-var1, 0], [1+var1, 1+var2, -2], [1-var2, 1+var1, -2], [1-var1, 1-var2, -2], [1+var2, 1-var1, -2]]) 
             # project 3D points to image plane
             imgpts, jac = cv2.projectPoints(axis, rvecs, tvecs, mtx, dist)
             draw(frame, imgpts)
