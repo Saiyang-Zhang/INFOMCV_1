@@ -1,17 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="c992ddfe-e5f2-454c-8992-6d6a3d539d24" name="Changes" comment="Lots of change">
+    <list default="true" id="c992ddfe-e5f2-454c-8992-6d6a3d539d24" name="Changes" comment="fix linear interpolation">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CameraParams/dist.npy" beforeDir="false" afterPath="$PROJECT_DIR$/CameraParams/dist.npy" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CameraParams/mtx.npy" beforeDir="false" afterPath="$PROJECT_DIR$/CameraParams/mtx.npy" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CameraParams/rvecs.npy" beforeDir="false" afterPath="$PROJECT_DIR$/CameraParams/rvecs.npy" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CameraParams/tvecs.npy" beforeDir="false" afterPath="$PROJECT_DIR$/CameraParams/tvecs.npy" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CameraRoll/1.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/CameraRoll/1.jpg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CameraRoll/10.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/CameraRoll/10.jpg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CameraRoll/20.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/CameraRoll/20.jpg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CameraRoll/21.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/CameraRoll/21.jpg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CameraRoll/tilted.jpg" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/p1.py" beforeDir="false" afterPath="$PROJECT_DIR$/p1.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -96,7 +91,21 @@
       <option name="project" value="LOCAL" />
       <updated>1676412813338</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="fix linear interpolation">
+      <created>1676558995507</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1676558995507</updated>
+    </task>
+    <task id="LOCAL-00009" summary="fix linear interpolation">
+      <created>1676559116133</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1676559116133</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -115,6 +124,7 @@
     <MESSAGE value="manual corner annotation?" />
     <MESSAGE value="Merge remote-tracking branch 'origin/main'&#10;&#10;# Conflicts:&#10;#&#9;UndistortImage/0.jpg" />
     <MESSAGE value="Lots of change" />
-    <option name="LAST_COMMIT_MESSAGE" value="Lots of change" />
+    <MESSAGE value="fix linear interpolation" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix linear interpolation" />
   </component>
 </project>
