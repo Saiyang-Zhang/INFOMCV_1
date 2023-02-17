@@ -165,9 +165,9 @@ def run(round):
     ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, gray.shape[::-1], None, None)
     runNum = 0
     if round == 10:
-        runNum = 2;
+        runNum = 2
     if round == 5:
-        runNum = 3;
+        runNum = 3
     np.save('./CameraParams/Run{}/mtx.npy'.format(runNum), mtx)
     np.save('./CameraParams/Run{}/dist.npy'.format(runNum), dist)
     np.save('./CameraParams/Run{}/rvecs.npy'.format(runNum), rvecs)
@@ -181,25 +181,22 @@ def draw_axis(img, corner, imgpts):
     return img
 
 # draw contours online
-def draw_cube(img, imgpts):
+def draw_cube(img, imgpts, shadowpts):
     imgpts = np.int32(imgpts).reshape(-1, 2)
-    # draw ground floor in green
+    # Draw floor
     img = cv2.drawContours(img, [imgpts[:4]], -1, (29,133,223), -2)
-    # draw pillars in blue color
+
+    # Draw shadow
+    shadowpts = np.int32(shadowpts).reshape(-1, 2)
+    for i, j in zip(range(4), range(4, 8)):
+        img = cv2.line(img, tuple(shadowpts[i]), tuple(shadowpts[j]), (120, 120, 120), 2)
+    img = cv2.drawContours(img, [shadowpts[4:]], -1, (120, 120, 120), 2)
+
+    # Draw pillars
     for i, j in zip(range(4), range(4, 8)):
         img = cv2.line(img, tuple(imgpts[i]), tuple(imgpts[j]), (29,133,223), 2)
-    # draw top layer in red color
+    # Draw top
     img = cv2.drawContours(img, [imgpts[4:]], -1, (29,133,223), 2)
-    return img
-
-# Draw shadow of the cube
-def draw_shadow(img, imgpts):
-    imgpts = np.int32(imgpts).reshape(-1, 2)
-    # draw pillars in blue color
-    for i, j in zip(range(4), range(4, 8)):
-        img = cv2.line(img, tuple(imgpts[i]), tuple(imgpts[j]), (120, 120, 120), 2)
-    # draw top layer in red color
-    img = cv2.drawContours(img, [imgpts[4:]], -1, (120, 120, 120), 2)
     return img
 
 def shadow(p1, p2):
@@ -258,28 +255,16 @@ def online(mtx, dist, rvecs, tvecs, run):
             p101 = np.float32([1+var2, 1-var1, -2])
             p110 = np.float32([1-var1, 1-var2, -2])
             p111 = np.float32([1-var2, 1+var1, -2])
-            # p000 = np.float32([0, 0, 0])
-            # p001 = np.float32([0, 2, 0])
-            # p010 = np.float32([2, 2, 0])
-            # p011 = np.float32([2, 0, 0])
-            # p100 = np.float32([0, 0, -2])
-            # p101 = np.float32([0, 2, -2])
-            # p110 = np.float32([2, 2, -2])
-            # p111 = np.float32([2, 0, -2])
             cube = np.float32([p000, p001, p010, p011, p100, p101, p110, p111])
             
             # Project 3D points to image plane
             cubepts, jac = cv2.projectPoints(cube, rvecs, tvecs, mtx, dist)
-            draw_cube(frame, cubepts)
-            
             # Project shadow of the cube to the chessboard from a fixed light
             shadowpts = np.float32([p000, p001, p010, p011, shadow(p100, light), shadow(light, p101), shadow(light, p110), shadow(light, p111)])
 
             shadowpts, jac = cv2.projectPoints(shadowpts, rvecs, tvecs, mtx, dist)
-            draw_shadow(frame, shadowpts)
-
-            # # Draw and display the corners
-            # cv2.drawChessboardCorners(frame, (w, h), corners2, ret)
+                                               
+            draw_cube(frame, cubepts, shadowpts)
 
         cv2.imshow('Camera', frame)
         k = cv2.waitKey(1)
