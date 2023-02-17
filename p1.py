@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 import glob
-import win32api,win32con
+#import win32api,win32con
 import time
 
 w = 9
@@ -108,8 +108,8 @@ def firstRun():
             cv2.waitKey(2000)
         else:
             if i == 0:
-                win32api.MessageBox(0, "If detect corners fail, please choose 4 corners clockwise, "
-                                       "starting from the top-left.","Notice", win32con.MB_OK)
+                # win32api.MessageBox(0, "If detect corners fail, please choose 4 corners clockwise, "
+                #                        "starting from the top-left.","Notice", win32con.MB_OK)
                 i += 1
             cv2.namedWindow('findCorners', cv2.WINDOW_NORMAL)
             cv2.resizeWindow('findCorners', 640, 480)
@@ -234,16 +234,25 @@ def online(mtx, dist, rvecs, tvecs):
             draw_axis(frame, np.int32(corners2[0][0]), axispts)
 
             t = (time.time()%12)/6
+            
             var1 = np.cos(t*np.pi)*np.sqrt(2)
             var2 = np.sin(t*np.pi)*np.sqrt(2)
             p000 = np.float32([1+var1, 1+var2, 0])
-            p001 = np.float32([1-var2, 1+var1, 0])
+            p001 = np.float32([1+var2, 1-var1, 0])
             p010 = np.float32([1-var1, 1-var2, 0])
-            p011 = np.float32([1+var2, 1-var1, 0])
+            p011 = np.float32([1-var2, 1+var1, 0])
             p100 = np.float32([1+var1, 1+var2, -2])
-            p101 = np.float32([1-var2, 1+var1, -2])
+            p101 = np.float32([1+var2, 1-var1, -2])
             p110 = np.float32([1-var1, 1-var2, -2])
-            p111 = np.float32([1+var2, 1-var1, -2])
+            p111 = np.float32([1-var2, 1+var1, -2])
+            # p000 = np.float32([0, 0, 0])
+            # p001 = np.float32([0, 2, 0])
+            # p010 = np.float32([2, 2, 0])
+            # p011 = np.float32([2, 0, 0])
+            # p100 = np.float32([0, 0, -2])
+            # p101 = np.float32([0, 2, -2])
+            # p110 = np.float32([2, 2, -2])
+            # p111 = np.float32([2, 0, -2])
             cube = np.float32([p000, p001, p010, p011, p100, p101, p110, p111])
             
             # Project 3D points to image plane
