@@ -6,6 +6,7 @@ import time
 
 w = 9
 h = 6
+
 # termination criteria, maximum number of loops = 30 and maximum error tolerance = 0.001
 criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
 # checkerboard points in the world coordinate system 3D
