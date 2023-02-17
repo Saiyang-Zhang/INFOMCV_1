@@ -19,12 +19,15 @@ subWorkCoord = np.array(subWorkCoord, np.float32)
 
 # Store the world coordinates and image coordinates of the checkerboard grid
 objpoints = []  # 3d point in real world space
-imgpoints = []  # 2d points in image plane.
+imgpoints = []  # 2d points in image plane
 
 # Store the mouse click number, click coordinates, manually computed image coordinates
 clickNum = 0
 coordinates = []
 subCoord = []
+
+# image number for saving the graph
+imgNum = 1
 
 # Display the coordinates of the points clicked on the image and find all points
 def click_event(event, x, y, flags, params):
@@ -61,7 +64,7 @@ def click_event(event, x, y, flags, params):
 
 # Calculate the transformation matrix and use it to find all points
 def subcoordinates(img):
-    global coordinates, subCoord, clickNum
+    global coordinates, subCoord, clickNum, imgNum
 
     # compute all coordinates
     worldCoord = np.array([[0,(h-1)*23], [(w-1)*23,(h-1)*23], [(w-1)*23,0], [0,0]], np.float32)
@@ -80,6 +83,10 @@ def subcoordinates(img):
     objpoints.append(objp)
     imgpoints.append(np.array(corners2, np.float32))
 
+    # save the image
+    cv2.imwrite("./ChessboardCornersImg/Run1/image{}.jpg".format(imgNum), img)
+    imgNum += 1
+
     #clear the numbers
     coordinates = []
     subCoord = []
@@ -87,11 +94,13 @@ def subcoordinates(img):
 
 # first run
 def firstRun():
+    global imgNum
     images = glob.glob('./CameraRoll/*.jpg')
     i = 0
     for fname in images:
         img = cv2.imread(fname)
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        u, v = img.shape[:2]
         # Find the chess board corners
         ret, corners = cv2.findChessboardCorners(gray, (w, h), None)
         # If found, save the information
@@ -100,12 +109,10 @@ def firstRun():
             corners2 = cv2.cornerSubPix(gray, corners, (11, 11), (-1, -1), criteria)
             objpoints.append(objp)
             imgpoints.append(corners2)
-            # Draw and display the corners
+            # Draw and save the corners
             cv2.drawChessboardCorners(img, (w, h), corners2, ret)
-            cv2.namedWindow('findCorners', cv2.WINDOW_NORMAL)
-            cv2.resizeWindow('findCorners', 640, 480)
-            cv2.imshow('findCorners', img)
-            cv2.waitKey(2000)
+            cv2.imwrite("./ChessboardCornersImg/Run1/image{}.jpg".format(imgNum), img)
+            imgNum += 1
         else:
             if i == 0:
                 win32api.MessageBox(0, "If detect corners fail, please choose 4 corners clockwise, "
@@ -117,9 +124,18 @@ def firstRun():
             cv2.setMouseCallback('findCorners', click_event, img)
             cv2.waitKey(0)
         cv2.destroyAllWindows()
+    ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, gray.shape[::-1], None, None)
+    np.save('./CameraParams/Run1/mtx.npy', mtx)
+    np.save('./CameraParams/Run1/dist.npy', dist)
+    np.save('./CameraParams/Run1/rvecs.npy', rvecs)
+    np.save('./CameraParams/Run1/tvecs.npy', tvecs)
+
 
 # second and third run
 def run(round):
+    objpoints = []  # 3d point in real world space
+    imgpoints = []  # 2d points in image plane
+
     images = glob.glob('./CameraRoll/*.jpg')
     i = 0
     for fname in images:
@@ -135,31 +151,27 @@ def run(round):
                 corners2 = cv2.cornerSubPix(gray, corners, (11, 11), (-1, -1), criteria)
                 objpoints.append(objp)
                 imgpoints.append(corners2)
-                # Draw and display the corners
+                # Draw and save the images
                 cv2.drawChessboardCorners(img, (w, h), corners2, ret)
-                cv2.namedWindow('findCorners', cv2.WINDOW_NORMAL)
-                cv2.resizeWindow('findCorners', 640, 480)
-                cv2.imshow('findCorners', img)
-                cv2.waitKey(2000)
+                if round == 10:
+                    cv2.imwrite("./ChessboardCornersImg/Run2/image{}.jpg".format(i+1), img)
+                if round == 5:
+                    cv2.imwrite("./ChessboardCornersImg/Run3/image{}.jpg".format(i+1), img)
                 i += 1
         else:
             break
         cv2.destroyAllWindows()
-    return gray, u, v
-
-# offline phase
-def offline():
-    firstRun()  # run1
-    run(10)     # run2
-    gray, u, v = run(5)     # run3
-    # Calibration
     ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, gray.shape[::-1], None, None)
-    print(len(objpoints), len(imgpoints) )
-    # Save camera parameters to an NPY file
-    np.save('./CameraParams/mtx.npy', mtx)
-    np.save('./CameraParams/dist.npy', dist)
-    np.save('./CameraParams/rvecs.npy', rvecs)
-    np.save('./CameraParams/tvecs.npy', tvecs)
+    runNum = 0
+    if round == 10:
+        runNum = 2;
+    if round == 5:
+        runNum = 3;
+    np.save('./CameraParams/Run{}/mtx.npy'.format(runNum), mtx)
+    np.save('./CameraParams/Run{}/dist.npy'.format(runNum), dist)
+    np.save('./CameraParams/Run{}/rvecs.npy'.format(runNum), rvecs)
+    np.save('./CameraParams/Run{}/tvecs.npy'.format(runNum), tvecs)
+
 
 def draw_axis(img, corner, imgpts):
     img = cv2.line(img, corner, tuple(np.int32(imgpts[0][0])), (255,0,0), 2)
@@ -205,7 +217,7 @@ def shadow(p1, p2):
     return intersection_point
 
 # Online phase: Capture picture using webcam
-def online(mtx, dist, rvecs, tvecs):
+def online(mtx, dist, rvecs, tvecs, run):
     camera = cv2.VideoCapture(0)
 
     objp = np.zeros((w * h, 3), np.float32)
@@ -263,15 +275,35 @@ def online(mtx, dist, rvecs, tvecs):
         k = cv2.waitKey(1)
         if k == 27 or cv2.getWindowProperty('Camera', cv2.WND_PROP_VISIBLE) < 1:   #press Esc to quit
             break
+        if k == ord('s'):   # Save the captured image to the disk
+            cv2.imwrite("./ChessboardCornersImg/Run{}_imageOnline.jpg".format(run), frame)
+            break
 
     camera.release()
     cv2.destroyAllWindows()
 
+def onlineRun(run):
+    mtx = np.load('./CameraParams/Run{}/mtx.npy'.format(run))
+    dist = np.load('./CameraParams/Run{}/dist.npy'.format(run))
+    rvecs = np.load('./CameraParams/Run{}/rvecs.npy'.format(run))
+    tvecs = np.load('./CameraParams/Run{}/tvecs.npy'.format(run))
+    online(mtx, dist, rvecs, tvecs, run)
+    print(run,". Intrinsic matrix K: \n", mtx)
+
+# offline phase, 3 runs
+def offlinePhase():
+    firstRun()  # run1
+    run(10)     # run2
+    run(5)      # run3
+
+# online phase, 3 runs
+def onlinePhase():
+    onlineRun(1)
+    onlineRun(2)
+    onlineRun(3)
+
 if __name__ == "__main__":
-    #offline()
-    mtx = np.load('./CameraParams/mtx.npy')
-    dist = np.load('./CameraParams/dist.npy')
-    rvecs = np.load('./CameraParams/rvecs.npy')
-    tvecs = np.load('./CameraParams/tvecs.npy')
-    online(mtx, dist, rvecs, tvecs)
+    #offlinePhase()
+    onlinePhase()
+
 

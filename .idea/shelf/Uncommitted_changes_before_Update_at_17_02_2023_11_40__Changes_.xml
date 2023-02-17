@@ -1,0 +1,24 @@
+<changelist name="Uncommitted_changes_before_Update_at_17_02_2023_11_40_[Changes]" date="1676630448109" recycled="true" deleted="true">
+  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_17_02_2023_11_40_[Changes]/shelved.patch" />
+  <option name="DESCRIPTION" value="Uncommitted changes before Update at 17/02/2023 11:40 [Changes]" />
+  <binary>
+    <option name="BEFORE_PATH" value="CameraParams/mtx.npy" />
+    <option name="AFTER_PATH" value="CameraParams/mtx.npy" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_17_02_2023_11_40_[Changes]/mtx.npy" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="CameraParams/tvecs.npy" />
+    <option name="AFTER_PATH" value="CameraParams/tvecs.npy" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_17_02_2023_11_40_[Changes]/tvecs.npy" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="CameraParams/rvecs.npy" />
+    <option name="AFTER_PATH" value="CameraParams/rvecs.npy" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_17_02_2023_11_40_[Changes]/rvecs.npy" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="CameraParams/dist.npy" />
+    <option name="AFTER_PATH" value="CameraParams/dist.npy" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_17_02_2023_11_40_[Changes]/dist.npy" />
+  </binary>
+</changelist>
