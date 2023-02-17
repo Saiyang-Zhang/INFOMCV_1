@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 import glob
-#import win32api,win32con
+import win32api,win32con
 import time
 
 w = 9
@@ -116,8 +116,8 @@ def firstRun():
             imgNum += 1
         else:
             if i == 0:
-                # win32api.MessageBox(0, "If detect corners fail, please choose 4 corners clockwise, "
-                #                        "starting from the top-left.","Notice", win32con.MB_OK)
+                win32api.MessageBox(0, "If detect corners fail, please choose 4 corners clockwise, "
+                                       "starting from the top-left.","Notice", win32con.MB_OK)
                 i += 1
             cv2.namedWindow('findCorners', cv2.WINDOW_NORMAL)
             cv2.resizeWindow('findCorners', 640, 480)
@@ -131,8 +131,12 @@ def firstRun():
     np.save('./CameraParams/Run1/rvecs.npy', rvecs)
     np.save('./CameraParams/Run1/tvecs.npy', tvecs)
 
+    # reject low quality results
+    rejection(rvecs, tvecs, mtx, dist, gray, 1)
+
 # second and third run
 def run(round):
+    global objpoints, imgpoints
     objpoints = []  # 3d point in real world space
     imgpoints = []  # 2d points in image plane
 
@@ -142,7 +146,6 @@ def run(round):
         if i < round:
             img = cv2.imread(fname)
             gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-            u, v = img.shape[:2]
             # Find the chess board corners
             ret, corners = cv2.findChessboardCorners(gray, (w, h), None)
             # If found, save the information
@@ -171,6 +174,9 @@ def run(round):
     np.save('./CameraParams/Run{}/dist.npy'.format(runNum), dist)
     np.save('./CameraParams/Run{}/rvecs.npy'.format(runNum), rvecs)
     np.save('./CameraParams/Run{}/tvecs.npy'.format(runNum), tvecs)
+
+    # reject low quality results
+    rejection(rvecs, tvecs, mtx, dist, gray, runNum)
 
 # draw XYZ axis
 def draw_axis(img, corner, imgpts):
@@ -284,7 +290,48 @@ def onlineRun(run):
     rvecs = np.load('./CameraParams/Run{}/rvecs.npy'.format(run))
     tvecs = np.load('./CameraParams/Run{}/tvecs.npy'.format(run))
     online(mtx, dist, rvecs, tvecs, run)
-    print(run,". Intrinsic matrix K: \n", mtx)
+    #print(run,". Intrinsic matrix K: \n", mtx)
+
+# calculate the mean and SD of error, then reject low quality pics based on them
+def rejection(rvecs, tvecs, mtx, dist, gray, runNum):
+    global objpoints, imgpoints
+    # Calculate the mean error
+    meanError = 0
+    for i in range(len(objpoints)):
+        imgpointsNew, _ = cv2.projectPoints(objpoints[i], rvecs[i], tvecs[i], mtx, dist)
+        error = cv2.norm(imgpoints[i], imgpointsNew, cv2.NORM_L2) / len(imgpointsNew)
+        meanError += error
+    meanError /= len(objpoints)
+
+    # Calculate the standard deviation
+    SD = 0
+    for i in range(len(objpoints)):
+        imgpointsNew, _ = cv2.projectPoints(objpoints[i], rvecs[i], tvecs[i], mtx, dist)
+        error = cv2.norm(imgpoints[i], imgpointsNew, cv2.NORM_L2) / len(imgpointsNew)
+        SD += (error - meanError) ** 2
+    SD = np.sqrt(SD /len(objpoints))
+
+    print("Mean Error:", meanError)
+    print("Standard Deviation:", SD)
+
+    # Remove images from the calibration process
+    try:
+        for i in range(len(objpoints) - 1, -1, -1):
+            imgpointsNew, _ = cv2.projectPoints(objpoints[i], rvecs[i], tvecs[i], mtx, dist)
+            error = cv2.norm(imgpoints[i], imgpointsNew, cv2.NORM_L2) / len(imgpointsNew)
+            if error > meanError + 2 * SD:    #delete the data if thw reprojection error > 2 * SD
+                objpoints.pop(i)
+                imgpoints.pop(i)
+                # print("i", i)
+    except:
+        print("Error, please try again.")
+        pass
+    ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, gray.shape[::-1], None, None)
+    # print("Renew", mtx)
+    np.save('./CameraParams/Run{}/mtxRenew.npy'.format(runNum), mtx)
+    np.save('./CameraParams/Run{}/distRenew.npy'.format(runNum), dist)
+    np.save('./CameraParams/Run{}/rvecsRenew.npy'.format(runNum), rvecs)
+    np.save('./CameraParams/Run{}/tvecsRenew.npy'.format(runNum), tvecs)
 
 # offline phase, 3 runs
 def offlinePhase():
@@ -301,5 +348,3 @@ def onlinePhase():
 if __name__ == "__main__":
     offlinePhase()
     onlinePhase()
-
-

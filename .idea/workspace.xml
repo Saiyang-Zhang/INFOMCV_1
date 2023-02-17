@@ -1,8 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="c992ddfe-e5f2-454c-8992-6d6a3d539d24" name="Changes" comment="Add runs and images">
+    <list default="true" id="c992ddfe-e5f2-454c-8992-6d6a3d539d24" name="Changes" comment="Add comments">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CameraParams/Run1/dist.npy" beforeDir="false" afterPath="$PROJECT_DIR$/CameraParams/Run1/dist.npy" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CameraParams/Run1/mtx.npy" beforeDir="false" afterPath="$PROJECT_DIR$/CameraParams/Run1/mtx.npy" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CameraParams/Run1/rvecs.npy" beforeDir="false" afterPath="$PROJECT_DIR$/CameraParams/Run1/rvecs.npy" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CameraParams/Run1/tvecs.npy" beforeDir="false" afterPath="$PROJECT_DIR$/CameraParams/Run1/tvecs.npy" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ChessboardCornersImg/Run1/image1.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/ChessboardCornersImg/Run1/image1.jpg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ChessboardCornersImg/Run1/image13.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/ChessboardCornersImg/Run1/image13.jpg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ChessboardCornersImg/Run1/image16.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/ChessboardCornersImg/Run1/image16.jpg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ChessboardCornersImg/Run1/image17.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/ChessboardCornersImg/Run1/image17.jpg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ChessboardCornersImg/Run1/image2.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/ChessboardCornersImg/Run1/image2.jpg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ChessboardCornersImg/Run1_imageOnline.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/ChessboardCornersImg/Run1_imageOnline.jpg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ChessboardCornersImg/Run2_imageOnline.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/ChessboardCornersImg/Run2_imageOnline.jpg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ChessboardCornersImg/Run3_imageOnline.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/ChessboardCornersImg/Run3_imageOnline.jpg" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/p1.py" beforeDir="false" afterPath="$PROJECT_DIR$/p1.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -115,7 +127,14 @@
       <option name="project" value="LOCAL" />
       <updated>1676636201204</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="Add comments">
+      <created>1676641224858</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1676641224858</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -136,6 +155,7 @@
     <MESSAGE value="Lots of change" />
     <MESSAGE value="fix linear interpolation" />
     <MESSAGE value="Add runs and images" />
-    <option name="LAST_COMMIT_MESSAGE" value="Add runs and images" />
+    <MESSAGE value="Add comments" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add comments" />
   </component>
 </project>
