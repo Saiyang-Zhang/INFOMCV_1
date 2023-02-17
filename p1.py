@@ -131,7 +131,6 @@ def firstRun():
     np.save('./CameraParams/Run1/rvecs.npy', rvecs)
     np.save('./CameraParams/Run1/tvecs.npy', tvecs)
 
-
 # second and third run
 def run(round):
     objpoints = []  # 3d point in real world space
@@ -173,7 +172,7 @@ def run(round):
     np.save('./CameraParams/Run{}/rvecs.npy'.format(runNum), rvecs)
     np.save('./CameraParams/Run{}/tvecs.npy'.format(runNum), tvecs)
 
-
+# draw XYZ axis
 def draw_axis(img, corner, imgpts):
     img = cv2.line(img, corner, tuple(np.int32(imgpts[0][0])), (255,0,0), 2)
     img = cv2.line(img, corner, tuple(np.int32(imgpts[1][0])), (0,255,0), 2)
@@ -199,6 +198,7 @@ def draw_cube(img, imgpts, shadowpts):
     img = cv2.drawContours(img, [imgpts[4:]], -1, (29,133,223), 2)
     return img
 
+# cast shadow
 def shadow(p1, p2):
     # Define the xOy axis plane as z = 0
     plane_normal = np.array([0, 0, 1])
@@ -277,6 +277,7 @@ def online(mtx, dist, rvecs, tvecs, run):
     camera.release()
     cv2.destroyAllWindows()
 
+# load parameters
 def onlineRun(run):
     mtx = np.load('./CameraParams/Run{}/mtx.npy'.format(run))
     dist = np.load('./CameraParams/Run{}/dist.npy'.format(run))
@@ -298,7 +299,7 @@ def onlinePhase():
     onlineRun(3)
 
 if __name__ == "__main__":
-    #offlinePhase()
+    offlinePhase()
     onlinePhase()
 
 

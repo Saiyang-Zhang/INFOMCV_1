@@ -1,12 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="c992ddfe-e5f2-454c-8992-6d6a3d539d24" name="Changes" comment="fix linear interpolation">
+    <list default="true" id="c992ddfe-e5f2-454c-8992-6d6a3d539d24" name="Changes" comment="Add runs and images">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CameraParams/dist.npy" beforeDir="false" afterPath="$PROJECT_DIR$/CameraParams/dist.npy" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CameraParams/mtx.npy" beforeDir="false" afterPath="$PROJECT_DIR$/CameraParams/mtx.npy" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CameraParams/rvecs.npy" beforeDir="false" afterPath="$PROJECT_DIR$/CameraParams/rvecs.npy" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CameraParams/tvecs.npy" beforeDir="false" afterPath="$PROJECT_DIR$/CameraParams/tvecs.npy" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/p1.py" beforeDir="false" afterPath="$PROJECT_DIR$/p1.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -105,7 +101,21 @@
       <option name="project" value="LOCAL" />
       <updated>1676559116133</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="Add runs and images">
+      <created>1676636128479</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1676636128479</updated>
+    </task>
+    <task id="LOCAL-00011" summary="Add runs and images">
+      <created>1676636201204</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1676636201204</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -125,6 +135,7 @@
     <MESSAGE value="Merge remote-tracking branch 'origin/main'&#10;&#10;# Conflicts:&#10;#&#9;UndistortImage/0.jpg" />
     <MESSAGE value="Lots of change" />
     <MESSAGE value="fix linear interpolation" />
-    <option name="LAST_COMMIT_MESSAGE" value="fix linear interpolation" />
+    <MESSAGE value="Add runs and images" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add runs and images" />
   </component>
 </project>
